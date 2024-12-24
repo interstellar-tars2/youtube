@@ -1,43 +1,32 @@
 document.addEventListener("DOMContentLoaded", () => {
     const page = document.body.getAttribute("data-page");
 
-    if (page === "home") {
-        loadVideos();
-    } else if (page === "upload") {
-        setupUploadForm();
-    } else if (page === "video") {
-        loadVideo();
+    if (page === "studio") {
+        setupStudio();
     }
 });
 
-// Load videos for the home page
-async function loadVideos() {
-    const videoGrid = document.getElementById("video-grid");
-
-    try {
-        const response = await fetch("/videos");
-        const videos = await response.json();
-
-        videos.forEach((video) => {
-            const videoCard = document.createElement("div");
-            videoCard.className = "video-card";
-            videoCard.innerHTML = `
-                <a href="video.html?id=${video.id}">
-                    <img src="${video.thumbnail}" alt="${video.title}">
-                    <h3>${video.title}</h3>
-                </a>
-            `;
-            videoGrid.appendChild(videoCard);
-        });
-    } catch (error) {
-        console.error("Error loading videos:", error);
-    }
-}
-
-// Set up the upload form
-function setupUploadForm() {
+function setupStudio() {
+    const uploadModal = document.getElementById("upload-modal");
+    const openUploadModalButton = document.getElementById("open-upload-modal");
+    const closeUploadModalButton = document.getElementById("close-upload-modal");
     const uploadForm = document.getElementById("upload-form");
+    const videoGrid = document.getElementById("studio-video-grid");
 
+    // Load user's videos
+    loadUserVideos(videoGrid);
+
+    // Open modal
+    openUploadModalButton.addEventListener("click", () => {
+        uploadModal.classList.add("visible");
+    });
+
+    // Close modal
+    closeUploadModalButton.addEventListener("click", () => {
+        uploadModal.classList.remove("visible");
+    });
+
+    // Handle upload form submission
     uploadForm.addEventListener("submit", async (event) => {
         event.preventDefault();
 
@@ -64,29 +53,28 @@ function setupUploadForm() {
         });
 
         alert("Video uploaded successfully!");
-        window.location.href = "index.html";
+        uploadModal.classList.remove("visible");
+        addVideoToGrid(videoGrid, metadata);
     });
 }
 
-// Load a single video
-async function loadVideo() {
-    const urlParams = new URLSearchParams(window.location.search);
-    const videoId = urlParams.get("id");
+function loadUserVideos(videoGrid) {
+    fetch("/videos")
+        .then((response) => response.json())
+        .then((videos) => {
+            videos.forEach((video) => {
+                addVideoToGrid(videoGrid, video);
+            });
+        })
+        .catch((error) => console.error("Error loading videos:", error));
+}
 
-    if (!videoId) {
-        alert("Video not found.");
-        window.location.href = "index.html";
-        return;
-    }
-
-    try {
-        const response = await fetch(`/videos/${videoId}`);
-        const video = await response.json();
-
-        document.getElementById("video-title").textContent = video.title;
-        document.getElementById("video-player").src = video.videoUrl;
-        document.getElementById("video-thumbnail").src = video.thumbnail;
-    } catch (error) {
-        console.error("Error loading video:", error);
-    }
+function addVideoToGrid(videoGrid, video) {
+    const videoCard = document.createElement("div");
+    videoCard.className = "video-card";
+    videoCard.innerHTML = `
+        <img src="${video.thumbnail}" alt="${video.title}">
+        <h3>${video.title}</h3>
+    `;
+    videoGrid.appendChild(videoCard);
 }
