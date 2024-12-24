@@ -3,6 +3,21 @@ document.addEventListener("DOMContentLoaded", () => {
     const uploadInput = document.getElementById("upload-input");
     const videoGrid = document.getElementById("video-grid");
 
+    // Fetch and display videos
+    async function fetchVideos() {
+        try {
+            const response = await fetch("/videos");
+            const videos = await response.json();
+
+            videoGrid.innerHTML = ""; // Clear the grid
+            videos.forEach((video) => {
+                addVideoToGrid(video.url, video.title);
+            });
+        } catch (error) {
+            console.error("Error fetching videos:", error);
+        }
+    }
+
     // Handle upload button click
     uploadButton.addEventListener("click", () => {
         uploadInput.click();
@@ -13,25 +28,19 @@ document.addEventListener("DOMContentLoaded", () => {
         const file = event.target.files[0];
 
         if (file) {
-            const formData = new FormData();
-            formData.append("video", file);
+            const videoUrl = URL.createObjectURL(file);
+            const title = prompt("Enter a title for your video:");
 
-            try {
-                const response = await fetch("/upload", {
+            if (title) {
+                // Save metadata
+                const metadata = { title, url: videoUrl };
+                await fetch("/upload-metadata", {
                     method: "POST",
-                    body: formData,
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(metadata),
                 });
 
-                const data = await response.json();
-
-                if (data.videoUrl) {
-                    addVideoToGrid(data.videoUrl, file.name);
-                } else {
-                    alert("Failed to upload video.");
-                }
-            } catch (error) {
-                console.error("Error uploading video:", error);
-                alert("An error occurred while uploading the video.");
+                addVideoToGrid(videoUrl, title);
             }
         }
     });
@@ -49,4 +58,7 @@ document.addEventListener("DOMContentLoaded", () => {
         `;
         videoGrid.appendChild(videoCard);
     }
+
+    // Initialize
+    fetchVideos();
 });
