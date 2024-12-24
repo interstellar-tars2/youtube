@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Studio - YouTube Clone</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body data-page="studio">
+    <header>
+        <div class="logo"><a href="index.html">YouTube Clone</a></div>
+        <nav>
+            <a href="index.html">Home</a>
+            <a href="studio.html">Studio</a>
+        </nav>
+    </header>
+    <main>
+        <section class="studio-content">
+            <h1>Your Videos</h1>
+            <div class="video-grid" id="studio-video-grid">
+                <!-- User's videos will be dynamically loaded here -->
+            </div>
+            <button id="open-upload-modal">Upload Video</button>
+        </section>
+
+        <!-- Upload Modal -->
+        <div id="upload-modal" class="modal hidden">
+            <div class="modal-content">
+                <span class="close-button" id="close-upload-modal">&times;</span>
+                <h2>Upload Video</h2>
+                <form id="upload-form">
+                    <label for="video-title">Title:</label>
+                    <input type="text" id="video-title" required>
+
+                    <label for="video-file">Video File:</label>
+                    <input type="file" id="video-file" accept="video/*" required>
+
+                    <label for="thumbnail-file">Thumbnail (optional):</label>
+                    <input type="file" id="thumbnail-file" accept="image/*">
+
+                    <button type="submit">Upload</button>
+                </form>
+            </div>
+        </div>
+    </main>
+    <script src="script.js"></script>
+</body>
+</html>
