@@ -5,35 +5,44 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // Handle upload button click
     uploadButton.addEventListener("click", () => {
-        uploadInput.click(); // Simulate a click on the hidden file input
+        uploadInput.click();
     });
 
     // Handle file upload
-    uploadInput.addEventListener("change", (event) => {
-        const files = event.target.files;
+    uploadInput.addEventListener("change", async (event) => {
+        const file = event.target.files[0];
 
-        if (files && files.length > 0) {
-            Array.from(files).forEach(file => {
-                if (file.type.startsWith("video/")) {
-                    const videoURL = URL.createObjectURL(file);
-                    addVideoToGrid(videoURL, file.name);
+        if (file) {
+            const formData = new FormData();
+            formData.append("video", file);
+
+            try {
+                const response = await fetch("/upload", {
+                    method: "POST",
+                    body: formData,
+                });
+
+                const data = await response.json();
+
+                if (data.videoUrl) {
+                    addVideoToGrid(data.videoUrl, file.name);
                 } else {
-                    alert("Please upload a valid video file.");
+                    alert("Failed to upload video.");
                 }
-            });
-
-            // Clear the input to allow re-uploading the same file if needed
-            uploadInput.value = "";
+            } catch (error) {
+                console.error("Error uploading video:", error);
+                alert("An error occurred while uploading the video.");
+            }
         }
     });
 
     // Add video to the grid
-    function addVideoToGrid(videoURL, title) {
+    function addVideoToGrid(videoUrl, title) {
         const videoCard = document.createElement("div");
         videoCard.className = "video-card";
         videoCard.innerHTML = `
             <video controls>
-                <source src="${videoURL}" type="video/mp4">
+                <source src="${videoUrl}" type="video/mp4">
                 Your browser does not support the video tag.
             </video>
             <h3>${title}</h3>
