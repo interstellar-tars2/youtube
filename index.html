@@ -3,19 +3,21 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>YouTube Clone</title>
+    <title>Home - YouTube Clone</title>
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
     <header>
-        <div class="logo">YouTube Clone</div>
-        <button class="upload-button">Upload Video</button>
-        <input type="file" id="upload-input" accept="video/*" hidden>
+        <div class="logo"><a href="index.html">YouTube Clone</a></div>
+        <nav>
+            <a href="index.html">Home</a>
+            <a href="upload.html">Upload Video</a>
+        </nav>
     </header>
     <main>
         <section class="content">
             <div class="video-grid" id="video-grid">
-                <!-- Uploaded videos will appear here -->
+                <!-- Videos will be dynamically loaded here -->
             </div>
         </section>
     </main>
